@@ -1,0 +1,27 @@
+version: '3.8'
+services:
+  redis-server:
+    image: arm64v8/redis:alpine
+#    Use instead when your machine is not powered by Apple Silicon chip
+#    image: redis:alpine
+    restart: always
+    ports:
+      - '6379:6379'
+    command: redis-server --save 20 1 --loglevel warning --requirepass GjcCw7WewuVE8kqZSYnBSU2y
+    volumes:
+      - redis-server:/data
+  storage-app:
+    image: storage-app
+    build: .
+    ports:
+      - '1321:1321'
+    environment:
+      REDIS_HOST: redis-server
+      REDIS_PORT: 6379
+      REDIS_PASSWORD: GjcCw7WewuVE8kqZSYnBSU2y
+      PORT: 1321
+    depends_on:
+      - redis-server
+volumes:
+  redis-server:
+    driver: local
